@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      service: kvstore
+    name: kvstore
+  spec:
+    ports:
+    - name: "{{ .Values.service.port }}"
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.port }}
+    selector:
+      service: kvstore
+    type: LoadBalancer
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      service: kvstore
+    name: redis
+  spec:
+    selector:
+      matchLabels:
+        service: kvstore
+    replicas: 1
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          service: kvstore
+      spec:
+        containers:
+        - env:
+          image: {{ .Values.image.repository }}
+          name: kvstore
+          ports:
+          - containerPort: {{ .Values.service.port }}
+          resources: {}
+        restartPolicy: Always
+  status: {}
+kind: List
+metadata: {}
+

@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      service: capi
+    name: capi
+  spec:
+    ports:
+    - name: "{{ .Values.service.port }}"
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.port }}
+    selector:
+      service: capi
+    type: LoadBalancer 
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      service: capi
+    name: capi
+  spec:
+    selector:
+      matchLabels:
+        service: capi
+    replicas: 1
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          service: capi
+      spec:
+        containers:
+        - env:
+          - name: redis.host
+            value: {{ .Values.host }}
+          - name: redis.port
+            value: "{{ .Values.port }}"
+          image: {{ .Values.image.repository }}
+          name: capi
+          ports:
+          - containerPort: {{ .Values.service.port }}
+          resources: {}
+        restartPolicy: Always
+  status: {}
+kind: List
+metadata: {}
+

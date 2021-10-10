@@ -1,0 +1,42 @@
+replicaCount: 1
+
+image:
+  repository: surisoft/capi-lb:0.0.1
+  pullPolicy: IfNotPresent
+  tag: ""
+
+service:
+  port: 8380
+
+host: kvstore
+port: 6379
+
+api:
+  gateway:
+    error:
+      endpoint: capi:8380/capi-error
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+resources: {}
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
